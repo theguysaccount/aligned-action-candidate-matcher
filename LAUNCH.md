@@ -29,7 +29,7 @@ send. Distribution runs on channels built into the product.
 
 | When | What happens without anyone |
 |---|---|
-| Every 6 hours (:41 UTC) | Sources rechecked, pages rebuilt and published, snapshot committed |
+| Every 6 hours (04:41, 10:41, 16:41, 22:41 UTC) | Sources rechecked, pages rebuilt and published, snapshot committed |
 | When Voteview publishes | New contested votes added, and the quiz reselected by the rule |
 | Weekly | Bill records refetched; IndexNow resubmission (Mondays) |
 | Mondays | Self-test of every live URL and of the quiz data |

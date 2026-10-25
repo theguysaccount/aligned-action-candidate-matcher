@@ -6,7 +6,7 @@ name: Update and deploy
 
 on:
   schedule:
-    - cron: "41 */6 * * *"
+    - cron: "41 4,10,16,22 * * *"
   push:
     branches: [main]
     paths-ignore: ["data/**", "**.md", "docs/**"]
