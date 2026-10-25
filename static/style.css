@@ -185,3 +185,7 @@ footer.site a { color: var(--muted); }
 .agree { color: var(--kalshi); }
 .disagree { color: var(--rep); }
 .wide-table th, .wide-table td { white-space: nowrap; }
+.q-loading { display: none; }
+.js .q-loading { display: block; }
+.js #quiz-static { display: none; }
+.js.quiz-failed #quiz-static { display: block; }

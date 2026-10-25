@@ -272,6 +272,8 @@
     answers = readHash();
     var fallback = document.getElementById("quiz-static");
     if (fallback) fallback.hidden = true;
+    var loading = document.querySelector(".q-loading");
+    if (loading) loading.remove();
     root.hidden = false;
     var first = items.findIndex(function (it) { return !answers[it.id]; });
     pos = first < 0 ? items.length - 1 : first;
@@ -288,7 +290,10 @@
       results.querySelector(".res-fresh").appendChild(fresh);
     }
   }).catch(function () {
-    root.innerHTML = "<p class=\"note\">The quiz data could not load. The bill pages below still work.</p>";
+    var loading = document.querySelector(".q-loading");
+    if (loading) loading.remove();
+    document.documentElement.className += " quiz-failed";
+    root.innerHTML = "<p class=\"note\">The quiz data could not load. The bills below link to every member's vote.</p>";
     root.hidden = false;
   });
 })();

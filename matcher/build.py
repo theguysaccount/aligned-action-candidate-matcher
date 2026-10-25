@@ -146,6 +146,7 @@ class Site:
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script>document.documentElement.className += " js";</script>
 <title>{E(title)}</title>
 <meta name="description" content="{E(desc)}">
 {'<link rel="canonical" href="' + E(canonical) + '">' if index else '<meta name="robots" content="noindex">'}
@@ -254,6 +255,7 @@ def home_page(site):
 <p class="lede">Judge them by what they did, not what they promise. Vote on {len(m.quiz)} bills Congress actually voted on, each described by its official nonpartisan summary, then see which of the {len([x for x in m.current.values() if x['chamber'] == 'House'])} House members and {len([x for x in m.current.values() if x['chamber'] == 'Senate'])} senators voted your way.</p>
 {countdown}
 <p class="small muted">Your answers stay in your browser; nothing is sent anywhere. Results appear after {cfg['quiz']['min_answers_for_results']} answers. Votes through {E(fmt_date(m.votes_through))}.</p>
+<p class="q-loading muted">Loading the quiz…</p>
 <section id="quiz" hidden data-base="./data/" data-min="{cfg['quiz']['min_answers_for_results']}" data-minshared="{cfg['quiz']['min_shared_votes_for_rank']}" data-site="{E(site.abs(''))}">
 <div class="q-progress"></div>
 <article class="card q-card" aria-live="polite"></article>
