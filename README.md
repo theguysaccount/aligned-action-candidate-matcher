@@ -8,7 +8,7 @@ Service summary, matched against every current member's roll-call votes, with ev
 
 - **Records, not promises.** Members are matched on what they voted for. The quiz bills are chosen by a fixed, published rule, and no person or model picks the issues.
 - **Private by design.** The quiz runs in the browser, and answers live only in the page address after the `#`.
-- **Automated.** A daily GitHub Actions job rereads Voteview, GovInfo and the FEC, tests, rebuilds and publishes. No server, no keys, no cookies.
+- **Automated.** A GitHub Actions job rereads Voteview, GovInfo and the FEC, tests, rebuilds and publishes. No server, no keys, no cookies.
 
 This repository is the "aligned-action candidate matcher" venture. It reuses the roll-call pipeline of
 [Independents Tracker](https://github.com/theguysaccount/independents-win-tracker).
@@ -44,7 +44,7 @@ python3 -m unittest discover -s tests -v
 ## Deploy
 
 A push to `main` builds and deploys to GitHub Pages through `.github/workflows/update.yml`, which
-also runs daily. [OPERATIONS.md](OPERATIONS.md) lists each job, how it fails safely, and the keys a
+also runs every 6 hours. [OPERATIONS.md](OPERATIONS.md) lists each job, how it fails safely, and the keys a
 human can turn later.
 
 ## Layout

@@ -1,4 +1,4 @@
-# Daily: reread Voteview roll calls, GovInfo bill records and the FEC candidate list when they change;
+# Every 6 hours: reread Voteview roll calls, GovInfo bill records and the FEC candidate list when they change;
 # test, rebuild, guard and publish the site, commit the data snapshot, ping IndexNow.
 # Fails safe: a source that cannot be read keeps its last good data (pages print the date votes
 # run through); a failed test or guard stops before deploy, so the last good site stays live.
@@ -6,7 +6,7 @@ name: Update and deploy
 
 on:
   schedule:
-    - cron: "41 7 * * *"
+    - cron: "41 */6 * * *"
   push:
     branches: [main]
     paths-ignore: ["data/**", "**.md", "docs/**"]
