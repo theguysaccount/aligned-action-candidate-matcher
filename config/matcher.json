@@ -1,0 +1,24 @@
+{
+ "site": {
+  "name": "Who Votes Like Me",
+  "tagline": "Vote on the bills Congress voted on. See which members voted like you, with every vote sourced.",
+  "election_date": "2026-11-03",
+  "default_url": "https://theguysaccount.github.io/aligned-action-candidate-matcher",
+  "repo": "theguysaccount/aligned-action-candidate-matcher"
+ },
+ "quiz": {
+  "items": 24,
+  "max_per_policy_area": 3,
+  "min_answers_for_results": 5,
+  "min_shared_votes_for_rank": 5,
+  "max_disapprovals": 5
+ },
+ "fec": {
+  "cycle": 2026
+ },
+ "sources_enabled": {
+  "voteview": true,
+  "govinfo": true,
+  "fec": true
+ }
+}
