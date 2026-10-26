@@ -7,13 +7,13 @@ human needs to be involved. The live site is https://theguysaccount.github.io/al
 
 | Workflow | When | What it does | How it fails safely |
 |---|---|---|---|
-| `update.yml` | Every 6 hours (04:41, 10:41, 16:41, 22:41 UTC), on every push to `main` (code), and by hand | `matcher.refresh` HEAD-checks the Voteview files and downloads them only when changed. It refetches GovInfo BILLSTATUS records that are new, have a new vote, or are older than 7 days, and refreshes the FEC candidate master when it changes. The job then runs the tests, builds the site and share card, runs `matcher.guard`, deploys to Pages, commits the `data/` snapshot, pings IndexNow (when pages change, and on Mondays), and runs the keep-alive. | Each source is read on its own. A failed source keeps its last good file, and `data/status.json` records the error. A bill whose record fails keeps its previous record, and the run fails over only if more than half fail. A failed test or guard stops before deploy, so the last good site stays live. IndexNow failures are ignored. |
+| `update.yml` | Hourly at :41 UTC, on every push to `main` (code), and by hand | `matcher.refresh` HEAD-checks the Voteview files and downloads them only when changed. It refetches GovInfo BILLSTATUS records that are new, have a new vote, or are older than 7 days, and refreshes the FEC candidate master when it changes. The job then runs the tests, builds the site and share card, runs `matcher.guard`, deploys to Pages, commits the `data/` snapshot, pings IndexNow (when pages change, and on Mondays), and runs the keep-alive. | Each source is read on its own. A failed source keeps its last good file, and `data/status.json` records the error. A bill whose record fails keeps its previous record, and the run fails over only if more than half fail. A failed test or guard stops before deploy, so the last good site stays live. IndexNow failures are ignored. |
 | `selftest.yml` | Mondays 10:53 UTC, and by hand | Runs the tests. `matcher.refresh --check-fresh` fails if Voteview or GovInfo has not been read in 3 days, or the FEC in 4. `matcher.selftest` fetches every sitemap URL plus the quiz data, checks for 200s, checks bill pages carry their roll-call source, and checks the quiz vote strings match the member list. Then the keep-alive. | Read-only against the site. A failure only sends GitHub's failure email to the owner. |
 | `test.yml` | Pull requests and pushes to other branches | Tests on Python 3.9 and 3.12, then build and guard | Never deploys |
 
 **Keep-alive.** GitHub pauses scheduled workflows in public repositories after 60 days without
 repository activity. Each scheduled run re-enables both workflows through the API. It also pushes an
-empty `keep-alive` commit if the last commit is more than 45 days old. Normally the 6-hourly
+empty `keep-alive` commit if the last commit is more than 45 days old. Normally the twice-daily
 `status.json` and weekly bill-record commits keep the repository active anyway.
 
 ## What to watch

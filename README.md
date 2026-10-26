@@ -44,7 +44,7 @@ python3 -m unittest discover -s tests -v
 ## Deploy
 
 A push to `main` builds and deploys to GitHub Pages through `.github/workflows/update.yml`, which
-also runs every 6 hours. [OPERATIONS.md](OPERATIONS.md) lists each job, how it fails safely, and the keys a
+also runs hourly. [OPERATIONS.md](OPERATIONS.md) lists each job, how it fails safely, and the keys a
 human can turn later.
 
 ## Layout
