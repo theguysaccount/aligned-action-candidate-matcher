@@ -25,6 +25,8 @@ D9. **Keyless sources only.** Voteview, GovInfo BILLSTATUS bulk XML (rather than
 
 D10. **State, not ZIP.** A ZIP-to-district lookup needs a crosswalk that splits ZIPs across districts. Choosing a state, then reading your own member from the list, is exact and needs no data on the visitor.
 
+D11. **2026 candidacy wording follows the calendar (Nov. 10, 2026).** Before the polls closed, a member's FEC filing showed as "on the 2026 ballot". From 06:00 UTC on Nov. 4 it shows as "ran in 2026", which is a fact about the filing, not the result: the result comes from each state's count. A test covers both states.
+
 ## Open questions for Jack (none block v1)
 1. Should this stay standalone and neutral, or become a feature of America.co or VoteUS? Standalone is recommended, so it can still be cited as neutral.
 2. Register whovoteslikeme.com (~$10/yr)? The steps are in OPERATIONS.md.

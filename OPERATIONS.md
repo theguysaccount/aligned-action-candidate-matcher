@@ -23,6 +23,10 @@ empty `keep-alive` commit if the last commit is more than 45 days old. Normally 
 - **Voteview lag**: votes arrive when Voteview publishes them. The footer and quiz show the date votes run through. If Voteview stops updating for more than a month while Congress is in session, the official Clerk and Senate XML feeds are the fallback to add (see "Keys", 5).
 - **The 120th Congress (Jan. 3, 2027)**: set `CONGRESS = 120` in `matcher/rollcalls.py` and the BILLSTATUS congress in `matcher/bills.py`, or keep 119 as an archive. Until then, nothing changes on its own.
 
+## The election calendar (automatic)
+
+From 2026-11-04 06:00 UTC (`config/matcher.json` → `phases.results_from`), the site describes 2026 candidacy in the past tense ("ran in 2026", "Only members who ran in 2026"), and the Election Day countdown is gone. The quiz is unaffected: it matches on votes already cast. On Jan. 3, 2027 the 120th Congress convenes: see the 120th Congress note under "What to watch".
+
 ## Manual levers (all optional)
 
 - **Run now:** Actions → Update and deploy → Run workflow (tick "force" to re-download everything).

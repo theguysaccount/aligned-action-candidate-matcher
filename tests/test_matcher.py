@@ -171,6 +171,42 @@ class SiteTest(unittest.TestCase):
         self.assertEqual(errors, [])
 
 
+class PostElectionTest(unittest.TestCase):
+    """After the polls close, 2026 candidacy is past tense everywhere, with no countdown."""
+
+    def test_wording_switches_by_date(self):
+        tmp = tempfile.mkdtemp()
+        try:
+            data = os.path.join(tmp, "data")
+            os.makedirs(data)
+            common.write_json(os.path.join(data, "rollcalls.json"), rollcalls.build(F.vote_texts()))
+            common.write_json(os.path.join(data, "bills.json"), {"bills": fixture_bills()})
+            common.write_json(os.path.join(data, "candidates2026.json"), {"candidates": fec.build(F.CN_TEXT, 2026)})
+            out = os.path.join(tmp, "site")
+            orig = build.load_config
+            build.load_config = lambda: F.CFG
+            try:
+                site = build.build(out=out, site_url="https://example.test/aligned-action-candidate-matcher", env={},
+                                   now=datetime(2026, 11, 10, tzinfo=timezone.utc), data_dir=data)
+            finally:
+                build.load_config = orig
+            self.assertTrue(site.m.post)
+            def read(rel):
+                with open(os.path.join(out, rel), encoding="utf-8") as f:
+                    return f.read()
+            home = read("index.html")
+            self.assertIn('data-ballot-chip="ran in 2026"', home)
+            self.assertIn("Only members who ran in 2026", home)
+            self.assertNotIn("countdown", home)
+            self.assertNotIn("2026 ballot", home)
+            member = read("members/alice-adams-aa/index.html")
+            self.assertIn("Ran for U.S. House in 2026 (FEC filing).", member)
+            self.assertNotIn("On the 2026 ballot", member)
+            self.assertIn("Ran in 2026", read("members/index.html"))
+        finally:
+            shutil.rmtree(tmp)
+
+
 @unittest.skipUnless(os.path.exists(os.path.join(common.DATA, "rollcalls.json")), "no committed data yet")
 class CommittedDataTest(unittest.TestCase):
     def test_build_and_guard(self):

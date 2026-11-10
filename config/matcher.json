@@ -20,5 +20,9 @@
   "voteview": true,
   "govinfo": true,
   "fec": true
+ },
+ "phases": {
+  "results_from": "2026-11-04T06:00:00Z",
+  "note": "From 06:00 UTC on Nov. 4, 2026 (when the last polls closed), 2026 candidacy is described in the past tense: 'ran in 2026' instead of 'on the 2026 ballot'."
  }
 }

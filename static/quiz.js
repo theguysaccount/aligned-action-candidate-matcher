@@ -9,6 +9,7 @@
   var MIN = +root.getAttribute("data-min") || 5;
   var MIN_SHARED = +root.getAttribute("data-minshared") || 5;
   var site = root.getAttribute("data-site") || location.href.split("#")[0];
+  var ballotChip = root.getAttribute("data-ballot-chip") || "on 2026 ballot";
   var quiz, matrix, items = [], answers = {}, pos = 0, chamber = "House", stateSel = "", ballotOnly = false;
 
   function track(name) {
@@ -131,7 +132,7 @@
   function memberLine(r, rank) {
     var m = r.m; // [bioguide, name, party, state, district, slug, ballot2026]
     var where = m[3] + (m[4] ? "-" + m[4] : "");
-    var ballot = m[6] ? " <span class=\"chip plain\" title=\"Filed with the FEC as a 2026 candidate\">on 2026 ballot</span>" : "";
+    var ballot = m[6] ? " <span class=\"chip plain\" title=\"Filed with the FEC as a 2026 candidate\">" + esc(ballotChip) + "</span>" : "";
     var detail = r.rows.map(function (x) {
       var it = x[0], a = x[1], v = x[2];
       var theirs = v === "Y" ? "<span class=\"yea\">Yea</span>" : v === "N" ? "<span class=\"nay\">Nay</span>" : "<span class=\"muted\">did not vote</span>";

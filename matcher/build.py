@@ -13,7 +13,7 @@ import json
 import os
 import shutil
 from collections import Counter, defaultdict
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from html import escape
 
 from . import select
@@ -75,6 +75,12 @@ class Model:
         self.current = {b: m for b, m in self.members.items() if m.get("current") and not m.get("delegate")}
         dates = [r["date"] for r in self.rc.get("rollcalls", {}).values()]
         self.votes_through = max(dates) if dates else ""
+        # After the polls close, 2026 candidacy is past tense, by date and with nobody touching it.
+        eday = date.fromisoformat(cfg["site"]["election_date"])
+        results_from = parse_iso(cfg.get("phases", {}).get("results_from")) or \
+            datetime(eday.year, eday.month, eday.day, 6, tzinfo=timezone.utc) + timedelta(days=1)
+        self.post = now >= results_from
+        self.ballot_chip = "ran in 2026" if self.post else "on 2026 ballot"
 
     def on_ballot(self, m):
         """Office this member filed for in 2026, if any (FEC statutory candidate)."""
@@ -193,7 +199,7 @@ class Site:
                         if support.startswith("https://") else "")
         return f"""<footer class="site"><div class="wrap cols">
 <div><strong>Who Votes Like Me</strong><p>Match yourself to Congress on what members actually voted for, not what they promise. Nonpartisan and automated: bills and summaries are official records, and every vote links to its roll call. Not affiliated with any party, campaign or PAC.</p>{support_html}</div>
-<div><strong>Data</strong><p class="asof">Roll calls (Voteview) through {E(fmt_date(self.m.votes_through)) if self.m.votes_through else 'unknown'}{', files updated ' + E(fmt_date(vv)) if vv else ''}<br>Bill summaries: Congressional Research Service via GovInfo<br>2026 ballot: FEC candidate filings</p></div>
+<div><strong>Data</strong><p class="asof">Roll calls (Voteview) through {E(fmt_date(self.m.votes_through)) if self.m.votes_through else 'unknown'}{', files updated ' + E(fmt_date(vv)) if vv else ''}<br>Bill summaries: Congressional Research Service via GovInfo<br>2026 candidates: FEC candidate filings</p></div>
 <div><strong>More</strong><p><a href="{root}methodology/">Methodology</a> · <a href="{root}data/">Download the data</a> · <a href="{root}about/">About and corrections</a> · <a href="{root}feed.xml">Feed</a> · <a href="https://github.com/{E(self.cfg['site']['repo'])}" rel="noopener">Source code</a></p>
 <p class="tiny">Your quiz answers stay in your browser. Nothing here tells anyone how to vote.</p></div>
 </div></footer>"""
@@ -256,7 +262,7 @@ def home_page(site):
 {countdown}
 <p class="small muted">Your answers stay in your browser; nothing is sent anywhere. Results appear after {cfg['quiz']['min_answers_for_results']} answers. Votes through {E(fmt_date(m.votes_through))}.</p>
 <p class="q-loading muted">Loading the quiz…</p>
-<section id="quiz" hidden data-base="./data/" data-min="{cfg['quiz']['min_answers_for_results']}" data-minshared="{cfg['quiz']['min_shared_votes_for_rank']}" data-site="{E(site.abs(''))}">
+<section id="quiz" hidden data-ballot-chip="{E(m.ballot_chip)}" data-base="./data/" data-min="{cfg['quiz']['min_answers_for_results']}" data-minshared="{cfg['quiz']['min_shared_votes_for_rank']}" data-site="{E(site.abs(''))}">
 <div class="q-progress"></div>
 <article class="card q-card" aria-live="polite"></article>
 <div class="q-nav"></div>
@@ -271,7 +277,7 @@ def home_page(site):
 <p class="small muted">Based on your <span class="res-count">0</span> answers. Agreement counts only bills the member actually voted on.</p>
 <div class="tabs" role="tablist"><button class="btn" role="tab" data-chamber="House" aria-selected="true">House</button><button class="btn" role="tab" data-chamber="Senate" aria-selected="false">Senate</button></div>
 <div class="filters"><select data-state aria-label="State"><option value="">All states</option></select>
-<label class="small"><input type="checkbox" data-ballot> Only members on the 2026 ballot</label></div>
+<label class="small"><input type="checkbox" data-ballot> {"Only members who ran in 2026" if m.post else "Only members on the 2026 ballot"}</label></div>
 <div class="res-body"></div>
 <div class="share res-share"></div>
 <div class="share res-fresh"></div>
@@ -388,7 +394,7 @@ def member_page(site, mm):
     party_line = (f"Voted with the {PARTY_WORD.get(p, '')} majority on {same_party} of these {counted} votes." if counted else "")
     body = f"""<h1>{E(mm['name'])}</h1>
 <p class="lede">{E(role)}, {E(STATES.get(mm['state'], mm['state']))} ({E(where(mm))}) · {E(mm['party_now'])}{E(caucus)}{E(status)}</p>
-<p>{'On the 2026 ballot for ' + E(ballot) + ' (FEC filing). ' if ballot else ''}{E(mm['name'])} cast votes on the {n_votes} contested bills below. {E(party_line)}</p>
+<p>{((('Ran for ' + E(ballot) + ' in 2026') if m.post else ('On the 2026 ballot for ' + E(ballot))) + ' (FEC filing). ') if ballot else ''}{E(mm['name'])} cast votes on the {n_votes} contested bills below. {E(party_line)}</p>
 <p><a class="btn primary" href="../../">Take the quiz: do you vote like {E(mm['name'])}?</a></p>
 <div class="table-wrap"><table data-sort><thead><tr><th><button>Date</button></th><th><button>Bill</button></th><th><button>Vote</button></th><th class="hide-sm">Result</th><th class="hide-sm">Party</th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>
 <p class="src">Source: Voteview roll calls through {E(fmt_date(m.votes_through))}, each linked from its bill page to the official record. {a_out(mm['voteview'], 'Voteview profile', 'voteview')}{' · ' + a_out(mm['congress_gov'], 'Congress.gov', 'congress') if mm.get('congress_gov') else ''}</p>"""
@@ -408,7 +414,7 @@ def members_index(site):
 <select data-filter="#members" data-key="chamber" aria-label="Chamber"><option value="">Both chambers</option><option value="House">House</option><option value="Senate">Senate</option></select>
 <select data-filter="#members" data-key="party" aria-label="Party"><option value="">All parties</option><option value="D">Democrats</option><option value="R">Republicans</option><option value="I">Independents</option></select>
 <span class="small muted"><span data-count="#members">{len(rows)}</span> shown</span></div>
-<div class="table-wrap"><table id="members" data-sort><thead><tr><th><button>Member</button></th><th><button>Seat</button></th><th><button>Party</button></th><th><button>Chamber</button></th><th class="hide-sm"><button>2026 ballot</button></th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>"""
+<div class="table-wrap"><table id="members" data-sort><thead><tr><th><button>Member</button></th><th><button>Seat</button></th><th><button>Party</button></th><th><button>Chamber</button></th><th class="hide-sm"><button>{"Ran in 2026" if m.post else "2026 ballot"}</button></th></tr></thead><tbody>{''.join(rows)}</tbody></table></div>"""
     site.page("members/", "Voting records of every member of Congress, 2025–2026 | Who Votes Like Me",
               "Find any House member or senator and see how they voted on every contested bill of the 119th Congress.",
               body, nav="members/", crumbs=[("Members", None)], priority="0.8")
@@ -488,7 +494,7 @@ def methodology_page(site):
 <ul><li>For each current member, agreement = bills where the member's recorded vote equals yours ÷ bills you both voted on. Skipped bills, and votes the member missed, are left out.</li>
 <li>House members are compared on the House's votes and senators on the Senate's. Bills that only one chamber voted on compare only that chamber.</li>
 <li>National lists rank members with at least {q['min_shared_votes_for_rank']} shared votes. Ties are shown as ties: on party-line votes many members vote identically.</li>
-<li>“On the 2026 ballot” means the member's FEC candidate id (from the congress-legislators project) is a statutory 2026 House or Senate candidate in the FEC's candidate master file.</li></ul>
+<li>“{"Ran in 2026" if site.m.post else "On the 2026 ballot"}” means the member's FEC candidate id (from the congress-legislators project) is a statutory 2026 House or Senate candidate in the FEC's candidate master file{"; it says nothing about the result, which comes from each state's official count" if site.m.post else ""}.</li></ul>
 <h2>Limits</h2>
 <ul><li>A yea or nay on a final vote compresses a lot: members sometimes vote against bills they support over a single provision, or for bills they dislike as part of a deal.</li>
 <li>Only members' recorded votes in this Congress count, so challengers who hold no seat cannot be matched.</li>
