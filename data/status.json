@@ -1,26 +1,26 @@
 {
  "bills": {
-  "checked_at": "2026-11-11T07:04:35Z",
+  "checked_at": "2026-11-11T15:36:35Z",
   "error": "",
   "last_changed": "2026-11-09T08:39:11Z",
-  "last_success": "2026-11-11T07:04:35Z",
+  "last_success": "2026-11-11T15:36:35Z",
   "note": "0 bill records fetched, 0 failed, 206 kept",
   "ok": true
  },
  "fec": {
-  "checked_at": "2026-11-11T07:04:35Z",
+  "checked_at": "2026-11-11T15:36:35Z",
   "error": "",
   "last_changed": "2026-11-11T07:04:35Z",
-  "last_success": "2026-11-11T07:04:35Z",
-  "note": "2599 statutory 2026 House and Senate candidates",
+  "last_success": "2026-11-11T15:36:35Z",
+  "note": "FEC candidate master unchanged",
   "ok": true
  },
  "rollcalls": {
-  "checked_at": "2026-11-11T07:04:35Z",
+  "checked_at": "2026-11-11T15:36:35Z",
   "error": "",
-  "last_changed": "2026-11-10T10:21:42Z",
-  "last_success": "2026-11-11T07:04:35Z",
-  "note": "Voteview files unchanged",
+  "last_changed": "2026-11-11T15:36:35Z",
+  "last_success": "2026-11-11T15:36:35Z",
+  "note": "555 members, 247 contested final votes on bills",
   "ok": true
  }
 }
